@@ -9,7 +9,6 @@ func (c *CodonGraph) FindIfCircular() (isCyclingCode bool) {
 		for _, val := range c.TetranucleotideNodes[i*2] {
 			if _, has := indexOfInt(c.TetranucleotideNodes[i*2+1], val); !has {
 				c.CyclingIndex = 1
-				return
 			}
 		}
 
@@ -30,6 +29,11 @@ func (c *CodonGraph) FindIfCircular() (isCyclingCode bool) {
 		}
 	}
 
+    c.connectionsToString(connections)
+    if c.CyclingIndex == 1 {
+        return
+    }
+
 	if isCycling := c.firstStage(connections); isCycling {
 		c.CyclingIndex = 2
 		return
@@ -45,8 +49,26 @@ func (c *CodonGraph) FindIfCircular() (isCyclingCode bool) {
 		return
 	}
 
-	c.MaxPath = c.findPath(connections)
+	c.MaxPath = c.findPath(connections)    
 	return true
+}
+
+func (c *CodonGraph) connectionsToString(connections [2][6]bool) {
+	c.NucleotideConnections = make([]string, 0)
+	for index, val := range connections[0] {
+		aI, bI := getFromNucletideByConnectionIdx(0, index), getToNucletideByConnectionIdx(0, index)
+		a, b := c.Nucleotide[aI/2], c.Nucleotide[bI/2]
+		if val || connections[1][index] {
+			if val && connections[1][index] {
+				c.NucleotideConnections = append(c.NucleotideConnections, a+"<->"+b)
+			} else if connections[1][index] {
+				c.NucleotideConnections = append(c.NucleotideConnections, b+"-->"+a)
+			} else {
+				c.NucleotideConnections = append(c.NucleotideConnections, a+"-->"+b)
+
+			}
+		}
+	}
 }
 
 func (c *CodonGraph) firstStage(connections [2][6]bool) (isCycling bool) {
@@ -146,7 +168,7 @@ func (c *CodonGraph) findPath(connections [2][6]bool) int {
 		if temp := c.findFromRightPath(connections, idx, incomming); temp > maxLength {
 			maxLength = temp
 		}
-        
+
 		nucIndex = getFromNucletideByConnectionIdx(1, idx)
 		incomming = 0
 		if len(c.TetranucleotideNodes[nucIndex]) > 0 {
@@ -167,7 +189,7 @@ func (c *CodonGraph) findFromRightPath(connections [2][6]bool, idx, length int) 
 		if len(c.TetranucleotideNodes[nucIndex+1]) > 0 {
 			return length + 1
 		}
-        
+
 		return length
 	}
 
@@ -218,7 +240,7 @@ func (c *CodonGraph) findFromRightPath(connections [2][6]bool, idx, length int) 
 			length = temp
 		}
 	}
-    
+
 	nucIndex := getToNucletideByConnectionIdx(0, idx)
 	if length == startLength && len(c.TetranucleotideNodes[nucIndex+1]) > 0 {
 		return startLength + 1
@@ -283,7 +305,7 @@ func (c *CodonGraph) findFromLeftPath(connections [2][6]bool, idx, length int) i
 			length = temp
 		}
 	}
-    
+
 	nucIndex := getToNucletideByConnectionIdx(1, idx)
 	if length == startLength && len(c.TetranucleotideNodes[nucIndex+1]) > 0 {
 		return startLength + 1

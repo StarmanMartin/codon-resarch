@@ -4,25 +4,19 @@ import (
 	"errors"
 	"regexp"
 	"sort"
+	"github.com/starmanmartin/codon-resarch/ctools"    
 )
 
 var (
 	codonReg       *regexp.Regexp
 	baseList       [4]string
-	complementList map[rune]string
 	moveList       [36][]int
 )
 
 func init() {
-	codonReg = regexp.MustCompile(`^[AUGC]{3}$`)
-	baseList = [...]string{"A", "U", "C", "G"}
-	complementList = map[rune]string{
-		[]rune(baseList[0])[0]: baseList[1],
-		[]rune(baseList[1])[0]: baseList[0],
-		[]rune(baseList[3])[0]: baseList[2],
-		[]rune(baseList[2])[0]: baseList[3],
-	}
-
+	codonReg = ctools.CodonReg
+	baseList = ctools.BaseList
+    
 	moveList[0] = []int{}
 	moveList[1] = []int{0, 1, 0, 2}
 	moveList[2] = []int{0, 2}
@@ -94,6 +88,7 @@ func (s dinucleotideSorter) Less(i, j int) bool {
 type CodonGraph struct {
 	List                       []string
 	DinucleotideNodes          []string
+    NucleotideConnections          []string
 	TetranucleotideNodes       [8][]int
 	CyclingIndex               int
 	SelfComplementary          bool

@@ -1,22 +1,8 @@
 package resarch
 
 import (
-	"fmt"
+	"github.com/starmanmartin/codon-resarch/ctools"
 )
-
-func makeComplementar(codon string) (comCodon string) {
-	runes := []rune(codon)
-
-	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-		runes[i], runes[j] = runes[j], runes[i]
-	}
-
-	for i := 0; i < len(runes); i++ {
-		comCodon = fmt.Sprintf("%s%s", comCodon, complementList[runes[i]])
-	}
-
-	return
-}
 
 func (c *CodonGraph) IsSelfComplementary() {
 	c.PropertyOne, c.PropertyTwo = c.hasProperties()
@@ -25,7 +11,7 @@ func (c *CodonGraph) IsSelfComplementary() {
     isSelfComplementary := true
 	for idx, val := range c.List {
 		if !hasComp[idx] {
-			comp := makeComplementar(val)
+			comp := ctools.MakeComplementar(val)
 			cIdx, hasNot := indexOf(c.List, comp)
 			if hasNot {
                 isSelfComplementary = false
@@ -62,7 +48,7 @@ func (c *CodonGraph) hasProperties() (bool, bool) {
 
 	for idx, val := range c.DinucleotideNodes {
 		if !hasComp[idx] {
-			comp := makeComplementar(val)
+			comp := ctools.MakeComplementar(val)
 			cIdx, hasNot := indexOf(c.DinucleotideNodes, comp)
 			if hasNot {
 				return false, false
