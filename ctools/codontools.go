@@ -90,6 +90,17 @@ func RemoveComlements(list []string) string {
 	return strings.Join(newList, " ")
 }
 
+func RemoveGU(list []string) string {
+	newList := make([]string, 0, len(list)/2)
+	for _, codon := range list {
+        if codon[1:2] != "G" && codon[1:2] != "U" {
+			newList = append(newList, codon)
+		}
+	}
+
+	return strings.Join(newList, " ")
+}
+
 func Shuffle(list []string) string {
 	t := time.Now()
 	rand.Seed(int64(t.Nanosecond()))
